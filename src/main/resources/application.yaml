@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: special-requests-management-api
+  datasource:
+    url: jdbc:mysql://localhost:3306/request_mgt?createDatabaseIfNotExist=true
+    username: root
+    password: rootpassword
+  jpa:
+    show-sql: true

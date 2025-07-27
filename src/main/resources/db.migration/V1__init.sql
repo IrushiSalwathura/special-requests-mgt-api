@@ -1,0 +1,31 @@
+CREATE TABLE roles
+(
+    id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    type VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE users
+(
+    id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(255) NOT NULL,
+    role_id BIGINT NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+CREATE TABLE requests
+(
+    id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    preferred_date DATE NOT NULL,
+    preferred_time TIME NOT NULL,
+    feedback VARCHAR(255) NOT NULL,
+    user_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
