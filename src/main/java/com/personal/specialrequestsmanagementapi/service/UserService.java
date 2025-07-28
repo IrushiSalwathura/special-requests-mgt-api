@@ -24,17 +24,22 @@ public class UserService {
            if(!errorMap.isEmpty()){
                return new ResponseEntity<>(new UserResponse( 400, "Failure", "User Validation Failed", errorMap),HttpStatus.BAD_REQUEST);
            }
-           User user = userRepository.findById(userDto.getId())
-                   .orElseThrow(() -> new RuntimeException("User not found"));
-           if(userDto.getEmail().equals(user.getEmail()) && userDto.getPassword().equals(user.getPassword())){
-               userDto.setName(user.getName());
-               userDto.setEmail(user.getEmail());
-               userDto.setRoleId(user.getRole().getId());
+           User user = userRepository.findByEmail(userDto.getEmail());
+           if (user != null) {
+               if(userDto.getEmail().equals(user.getEmail()) && userDto.getPassword().equals(user.getPassword())){
+                   userDto.setId(user.getId());
+                   userDto.setName(user.getName());
+                   userDto.setEmail(user.getEmail());
+                   userDto.setRoleId(user.getRole().getId());
 
-               return new ResponseEntity<>(new UserResponse(200, "Success", "User logged in successfully", userDto), HttpStatus.OK);
-           } else {
-               return new ResponseEntity<>(new UserResponse(400, "Failure", "Username or password is incorrect"), HttpStatus.BAD_REQUEST);
+                   return new ResponseEntity<>(new UserResponse(200, "Success", "User logged in successfully", userDto), HttpStatus.OK);
+               } else {
+                   return new ResponseEntity<>(new UserResponse(400, "Failure", "Username or password is incorrect"), HttpStatus.BAD_REQUEST);
+               }
+           } else{
+               return new ResponseEntity<>(new UserResponse(400, "Failure", "User not found"), HttpStatus.BAD_REQUEST);
            }
+
        } catch (Exception e){
            return new ResponseEntity<>(new UserResponse(400, "Failure", "User login failed",
                    Map.of("service-error", "Internal Server Error")), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -49,8 +54,6 @@ public class UserService {
     }
 
     private void handleMandatoryValidations(UserDto userDto, Map<String, String> errorMap) {
-        if(userDto.getName() == null || userDto.getName().isEmpty())
-            errorMap.put("user-name", "Name is Required");
         if(userDto.getEmail() == null || userDto.getEmail().isEmpty())
             errorMap.put("user-email", "Email is Required");
         if(userDto.getPassword() == null || userDto.getPassword().isEmpty())

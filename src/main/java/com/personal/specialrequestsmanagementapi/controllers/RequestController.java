@@ -38,4 +38,9 @@ public class RequestController {
     public ResponseEntity<RequestResponse> deleteRequest(@PathVariable Long id) {
         return requestService.deleteRequest(id);
     }
+
+    @PutMapping("/review/{id}")
+    public ResponseEntity<RequestResponse> reviewRequest(@PathVariable Long id, @RequestBody RequestDto requestDto) {
+        return requestService.reviewRequest(id, requestDto);
+    }
 }

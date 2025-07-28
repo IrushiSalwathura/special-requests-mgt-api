@@ -84,20 +84,20 @@ public class RequestService {
                 return new ResponseEntity<>(new RequestResponse(400, "Failure", "Request validation failed", errorMap),HttpStatus.BAD_REQUEST);
             }
 
-            if (requestRepository.existsByEmail(requestDto.getEmail())) {
-                Request existingRequest = requestRepository.findByEmail(requestDto.getEmail());
-                requestDto.setId(existingRequest.getId());
-                requestDto.setName(requestDto.getName());
-                requestDto.setEmail(requestDto.getEmail());
-                requestDto.setType(requestDto.getType());
-                requestDto.setDescription(requestDto.getDescription());
-                requestDto.setStatus(requestDto.getStatus());
-                requestDto.setPreferredDate(requestDto.getPreferredDate());
-                requestDto.setPreferredTime(requestDto.getPreferredTime());
-                requestDto.setFeedback(requestDto.getFeedback());
-                requestDto.setUserId(requestDto.getUserId());
-                return new ResponseEntity<>(new RequestResponse(200, "Success" , "Request already exists", requestDto),HttpStatus.OK);
-            } else {
+//            if (requestRepository.existsByEmail(requestDto.getEmail())) {
+//                Request existingRequest = requestRepository.findByEmail(requestDto.getEmail());
+//                requestDto.setId(existingRequest.getId());
+//                requestDto.setName(requestDto.getName());
+//                requestDto.setEmail(requestDto.getEmail());
+//                requestDto.setType(requestDto.getType());
+//                requestDto.setDescription(requestDto.getDescription());
+//                requestDto.setStatus(requestDto.getStatus());
+//                requestDto.setPreferredDate(requestDto.getPreferredDate());
+//                requestDto.setPreferredTime(requestDto.getPreferredTime());
+//                requestDto.setFeedback(requestDto.getFeedback());
+//                requestDto.setUserId(requestDto.getUserId());
+//                return new ResponseEntity<>(new RequestResponse(200, "Success" , "Request already exists", requestDto),HttpStatus.OK);
+//            } else {
                 User user = userRepository.findById(requestDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
 
                 Request request = new Request();
@@ -115,7 +115,7 @@ public class RequestService {
                 requestRepository.save(request);
                 requestDto.setId(request.getId());
                 return new ResponseEntity<>(new RequestResponse(200, "Success" , "Request added successfully", requestDto),HttpStatus.CREATED);
-            }
+//            }
         } catch (Exception e) {
             return new ResponseEntity<>(new RequestResponse(500, " Failure", "Request create failed",
                     Map.of("service-error", e.toString())), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -164,6 +164,29 @@ public class RequestService {
         }
     }
 
+    public ResponseEntity<RequestResponse> reviewRequest(Long id, RequestDto requestDto) {
+        try{
+            Map<String, String> errorMap = validateRequest(requestDto);
+            if(!errorMap.isEmpty()){
+                return new ResponseEntity<>(new RequestResponse(400, "Failure", "Request validation failed", errorMap),HttpStatus.BAD_REQUEST);
+            }
+
+            Request request = requestRepository.findById(id).orElseThrow(() -> new RuntimeException("Request not found"));
+
+            request.setFeedback(requestDto.getFeedback());
+            request.setStatus(requestDto.getStatus());
+
+            requestRepository.save(request);
+            requestDto.setId(request.getId());
+
+            return new ResponseEntity<>(new RequestResponse(200, "Success" , "Request reviewed successfully", requestDto),HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(new RequestResponse(500, "Failure", "Review Request Failed",
+                    Map.of("service-error", e.getMessage())), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private Map<String, String> validateRequest(RequestDto requestDto) {
         Map<String, String> errorMap = new HashMap<>();
         handleMandatoryValidations(requestDto,errorMap);
@@ -178,8 +201,8 @@ public class RequestService {
         if(requestDto.getDescription().length()<3)
             errorMap.put("description", "Description too short");
 
-        if(requestDto.getFeedback().length()<3)
-            errorMap.put("feedback", "Feedback too short");
+//        if(requestDto.getFeedback().length()<3)
+//            errorMap.put("feedback", "Feedback too short");
 
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" +
                 "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";

@@ -10,6 +10,7 @@ CREATE TABLE users
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     role_id BIGINT NOT NULL,
     FOREIGN KEY (role_id) REFERENCES roles(id)
 );
@@ -24,7 +25,7 @@ CREATE TABLE requests
     status VARCHAR(255) NOT NULL,
     preferred_date DATE NOT NULL,
     preferred_time TIME NOT NULL,
-    feedback VARCHAR(255) NOT NULL,
+    feedback VARCHAR(255),
     user_id BIGINT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
